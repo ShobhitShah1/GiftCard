@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "48167223583",
+    "project_id": "fetan-gift",
+    "storage_bucket": "fetan-gift.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48167223583:android:205760bb5c5545693f302a",
+        "android_client_info": {
+          "package_name": "com.fetan.giftcard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "48167223583-oc5p2f9q21tha2et0hrg76cpl55nrvrd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxTDjhCfyctXV4NR5fFfhyybxAi6mtaE4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "48167223583-oc5p2f9q21tha2et0hrg76cpl55nrvrd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "48167223583-ekum33dg77d35l862fev89l87669qs12.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fetan.giftcard"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48167223583:android:b53eeb0efd4476a83f302a",
+        "android_client_info": {
+          "package_name": "com.giftcard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "48167223583-oc5p2f9q21tha2et0hrg76cpl55nrvrd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxTDjhCfyctXV4NR5fFfhyybxAi6mtaE4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "48167223583-oc5p2f9q21tha2et0hrg76cpl55nrvrd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "48167223583-ekum33dg77d35l862fev89l87669qs12.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fetan.giftcard"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

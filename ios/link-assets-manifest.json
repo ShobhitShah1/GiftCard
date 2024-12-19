@@ -1,0 +1,61 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/FontsFree-Net-Ritts-Cursive-Regular.ttf",
+      "sha1": "f39b4bbc1109c2892573a9f118dfc7442b54053e"
+    },
+    {
+      "path": "assets/fonts/HelveticaNeue-Basic.otf",
+      "sha1": "ff8a992241e8fdf247971163323c066d6b5ea091"
+    },
+    {
+      "path": "assets/fonts/HelveticaNeue-Bold.otf",
+      "sha1": "f4666319f383c853f0efda9add9ea4eb326ae91c"
+    },
+    {
+      "path": "assets/fonts/HelveticaNeue-Light.otf",
+      "sha1": "4923aa3ecf6cce3169b9abc805aa5994be2a2c3b"
+    },
+    {
+      "path": "assets/fonts/HelveticaNeue-Medium.otf",
+      "sha1": "6831cdc8e512dfa57c22aa0c3615231739cf8921"
+    },
+    {
+      "path": "assets/fonts/HelveticaNeue-Regular.otf",
+      "sha1": "ff8a992241e8fdf247971163323c066d6b5ea091"
+    },
+    {
+      "path": "assets/fonts/HelveticaNeue-RegularItalic.otf",
+      "sha1": "33aa79b39cabd93a92dafd98769b8f0c23f6284a"
+    },
+    {
+      "path": "assets/fonts/HelveticaNeue-Thin.otf",
+      "sha1": "fb6d01debc693b867f1334e9e839a5a36d86d604"
+    },
+    {
+      "path": "assets/fonts/HelveticaNeue-Ultralight.otf",
+      "sha1": "c3d1da783e6431f0374af5f317980a499c66304e"
+    },
+    {
+      "path": "assets/fonts/Nasir Udin - MondiaThin.otf",
+      "sha1": "d3712f7f58cdf0ac28b02ae30650beb893d59ec2"
+    },
+    {
+      "path": "assets/fonts/Nasir Udin - MondiaThinItalic.otf",
+      "sha1": "a014289b46f3deaa6583a1c79a26ea52e2aea231"
+    },
+    {
+      "path": "assets/fonts/Righteous-Regular.ttf",
+      "sha1": "3129e2b47e224dec082c4169b396b1fa27a95749"
+    },
+    {
+      "path": "assets/fonts/cretype-Caros-Medium.otf",
+      "sha1": "601e7873e500c6b69c67124615c3134070513a35"
+    },
+    {
+      "path": "assets/fonts/new_renaissance.ttf",
+      "sha1": "b97183658dfa9ef0db52a9546ab378b3f9a4a89e"
+    }
+  ]
+}
