@@ -74,12 +74,6 @@ const CityButton = () => {
           setCity(option.value);
           // setValue(option.value);
         }}
-        onHideDropdown={() => {
-          console.log('hide');
-        }}
-        onShowDropdown={() => {
-          console.log('show');
-        }}
         buttonContainerStyle={{
           right: 0,
           backgroundColor: '#white',

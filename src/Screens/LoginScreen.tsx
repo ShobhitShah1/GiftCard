@@ -27,7 +27,6 @@ const LoginScreen: React.FC = () => {
   const dToken = useDeviceToken();
 
   const onSubmit = (value: FieldValues) => {
-    console.log("value login **",value)
     // getDeviceToken()
     //   .then(token => {
     //     login({ token, ...value });

@@ -64,17 +64,14 @@ const AgentForm: React.FC<
 
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const deviceToken = useDeviceToken();
-  // console.log('fee data ********', props.card?.amount);
   const [verify, agentState] = OrderApi.useAgentVerifyMutation();
 
   const onSubmit = (value: FieldValues) => {
-    console.log('ONSUBMIT AGENT CALL', value);
     verify(value);
     // login({ token: deviceToken || '', ...value }, false);
   };
 
   useEffect(() => {
-    console.log('AGENT STATE', agentState);
     if (agentState.data?.data && agentState.isSuccess) {
       props.onSuccess(agentState.data.data.id);
     }
@@ -135,7 +132,6 @@ const AgentForm: React.FC<
           fontSize: 20,
         }}
         onCodeChanged={code => {
-          console.log(code);
           setValue('pinCode', code);
         }}
         autoFocusOnLoad={false}

@@ -160,9 +160,7 @@ export const DrawerContent = () => {
       } else if (result.action === Share.dismissedAction) {
         // dismissed
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   return (
     <View className="relative ">

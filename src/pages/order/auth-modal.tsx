@@ -51,7 +51,7 @@ const validation = yup.object({
   password: yup.string().min(6).required(),
 });
 
-const LoginForm  = () => {
+const LoginForm = () => {
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(validation),
   });
@@ -62,7 +62,6 @@ const LoginForm  = () => {
   const deviceToken = useDeviceToken();
 
   const onSubmit = (value: FieldValues) => {
-    console.log('value ***********', value);
     login({ token: deviceToken || '', ...value }, false);
   };
   return (

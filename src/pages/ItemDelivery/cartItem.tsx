@@ -29,12 +29,20 @@ import {
 import axios from 'axios';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
-import { Alert, FlatList } from 'react-native';
-import { Image, ScrollView, Text } from 'react-native';
-import { SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useEffectOnce, usePrevious } from 'react-use';
+import { usePrevious } from 'react-use';
 
 export const CartItemPage: FC = () => {
   const router = useRoute<RouteProp<RootStackParamList, 'CARTITEM'>>();
@@ -66,7 +74,6 @@ export const CartItemPage: FC = () => {
   }>({});
 
   useEffect(() => {
-    console.log('state', state);
     if (state.isSuccess && state.data?.data) {
       toast.success(state.data?.message || '');
       if (state.data.data?.paymentUrl) {
@@ -115,32 +122,23 @@ export const CartItemPage: FC = () => {
   });
 
   const onSubmit = (value: FieldValues) => {
-    console.log('Form Data ****************************', value);
     checkout(true);
   };
 
   const checkout = useCallback(
     async (force = false) => {
-      console.log(
-        'isSubmitSuccessfulisSubmitSuccessfulisSubmitSuccessful',
-        isSubmitSuccessful,
-      );
       if (isSubmitSuccessful || force) {
-        console.log(
-          'authenticatedauthenticatedauthenticatedauthenticated',
-          authenticated,
-          verified,
-        );
         if (authenticated && verified) {
           if (paymentName == 'paypal') {
             purchaseOrder(getValues());
           } else if (paymentName == 'telebirr') {
-            console.log('###########################===else====>', getValues());
-
             await purchaseOrder(getValues())
               .then(res => {
-                console.log('Response You Get For Placeorder:', res?.data);
-
+                if (res?.data?.data?.paymentUrl) {
+                  onClick(res?.data?.data?.paymentUrl);
+                } else {
+                  Alert.alert('Error', 'Payment URL not found');
+                }
                 // navigation.navigate('TELEBIRR', {
                 //   card: totalAmountData,
                 //   uuid: res?.data?.data?.paymentUrl,
@@ -148,21 +146,13 @@ export const CartItemPage: FC = () => {
                 // });
                 // initializePaymentSheet(res?.data?.data?.paymentUrl);
               })
-              .catch(err => {
-                console.log(err);
-              });
+              .catch(err => {});
           } else {
-            console.log(
-              '###########################===else==1234==>',
-              getValues(),
-            );
             await purchaseOrder(getValues())
               .then(res => {
-                console.log('Respinse You Get For Placeorder:', res?.data);
                 initializePaymentSheet(res?.data?.data?.paymentUrl);
               })
               .catch(err => {
-                console.log('errrrr', err);
                 // Alert.alert('stripe', String(err));
               });
           }
@@ -207,10 +197,8 @@ export const CartItemPage: FC = () => {
   ]);
 
   const initializePaymentSheet = async (SendUUID: string) => {
-    console.log('initializePaymentSheet UUID', SendUUID);
     const { paymentIntent, ephemeralKey, customer, PaymentId } =
       await fetchPaymentSheetParams(SendUUID);
-    console.log('paymentIntent:>', paymentIntent, ephemeralKey, customer);
     const { error } = await initPaymentSheet({
       customerId: customer,
       customerEphemeralKeySecret: ephemeralKey,
@@ -238,14 +226,9 @@ export const CartItemPage: FC = () => {
     // .catch(err => {
     //   console.log('err', err);
     // });
-    console.log('error ************', error);
     if (!error) {
       openPaymentSheet(PaymentId);
     } else if (error.code === PaymentSheetError.Failed) {
-      console.log(
-        `PaymentSheet init failed with error code: ${error.code}`,
-        error.message,
-      );
       // Alert.alert(
       //   'PaymentSheet init failed with error code',
       //   String(error.message),
@@ -267,15 +250,12 @@ export const CartItemPage: FC = () => {
       // const fees = (parseFloat(feeamt?.toString()) / 100) * amt;
       // const total = amt + fees; // Use original amount for non-delivery items
       const totalInteger = Math.round(totalAmountData * 100);
-      console.log('totalIntegertotalIntegertotalInteger', totalInteger);
       try {
         setPaymentId('');
         const formdata = new FormData();
         formdata.append('amount', totalInteger);
         formdata.append('uuid', SendID);
 
-        console.log('fetchPaymentSheetParams Formdata ****', formdata);
-        console.log('Token  ****', _token);
         // Convert amount to string before appending
         const myHeaders = new Headers();
         myHeaders.append(
@@ -303,12 +283,10 @@ export const CartItemPage: FC = () => {
         }
 
         const result = await response.json();
-        console.log('Fetch Payment Sheet Params Result *****', result);
         const paymentIntent = result?.data?.paymentIntent;
         const ephemeralKey = result?.data?.ephemeralKey;
         const customer = result?.data?.customer;
         const PaymentId = result?.data?.payment_id;
-        console.log('PaymentId:', PaymentId);
         setPaymentId(PaymentId);
 
         return {
@@ -336,7 +314,6 @@ export const CartItemPage: FC = () => {
 
         // Convert amount to string before appending
 
-        console.log('fromdata *******', formdata);
         const myHeaders = new Headers();
         myHeaders.append(
           'X-Secret-Key',
@@ -361,13 +338,11 @@ export const CartItemPage: FC = () => {
         }
 
         const result = await response.json();
-        console.log('Payment Success Response:', result);
         // navigation.navigate("HOME_INDEX")
         await AsyncStorage.removeItem('cartItems');
         setCartItems([]);
         navigation.dispatch(StackActions.popToTop());
       } else {
-        console.log('Error In Payment success API');
       }
     } catch (error) {
       console.error('Error fetching payment sheet params:', error);
@@ -384,24 +359,15 @@ export const CartItemPage: FC = () => {
     } else {
       switch (error.code) {
         case PaymentSheetError.Failed:
-          console.log(
-            `PaymentSheet present failed with error code: ${error.code}`,
-            error.message,
-          );
           // Alert.alert('PaymentSheet present failed', String(error.message));
           break;
         case PaymentSheetError.Canceled:
-          console.log(
-            `PaymentSheet present was canceled with code: ${error.code}`,
-            error.message,
-          );
           // Alert.alert(
           //   'PaymentSheet present was canceled',
           //   String(error.message),
           // );
           break;
         case PaymentSheetError.Timeout:
-          console.log('PaymentSheet present timed out', String(error.message));
           break;
       }
     }
@@ -410,7 +376,6 @@ export const CartItemPage: FC = () => {
   useEffect(() => {
     (async function () {
       if (!(await isPlatformPaySupported({ googlePay: { testEnv: true } }))) {
-        console.log('Google Pay is not supported.');
         Alert.alert('Google Pay is not supported.');
         return;
       }
@@ -420,7 +385,6 @@ export const CartItemPage: FC = () => {
   useEffect(() => {
     (async function () {
       if (!(await isPlatformPaySupported())) {
-        console.log('Apple Pay is not supported.');
         return;
       }
     })();
@@ -454,18 +418,15 @@ export const CartItemPage: FC = () => {
 
       const itemId = item.id;
       const quantity = itemQuantities[itemId] || 1;
-      quantitiesString += `${quantity}${index === cartItems.length - 1 ? '' : ', '
-        }`;
+      quantitiesString += `${quantity}${
+        index === cartItems.length - 1 ? '' : ', '
+      }`;
       itemString += `${itemId}${index === cartItems.length - 1 ? '' : ', '}`;
-      // console.log(
-      //   'quantitiesStringquantitiesStringquantitiesString',
-      //   itemString,
-      // );
+
       setValue('quantity', quantitiesString);
       setValue('itemid', itemString);
       // Calculate the total cost for the item (including fees)
       const totalItemCost = itemPrice * quantity;
-      console.log(totalItemCost);
       totalAmount += totalItemCost;
       // Add the total cost for the item to the overall total amount
     });
@@ -482,11 +443,11 @@ export const CartItemPage: FC = () => {
     params?.deliveryFee,
     params?.DeliveryFee_usd,
   ]);
+
   // Function to fetch cart items from AsyncStorage
   const fetchCartItems = async () => {
     try {
       const cartItemsJson = await AsyncStorage.getItem('cartItems');
-      // console.log('cartItemsJsoncartItemsJsoncartItemsJson', cartItemsJson);
       if (cartItemsJson !== null) {
         const allCartItems = JSON.parse(cartItemsJson);
         // Filter cart items based on the provided merchantId
@@ -508,15 +469,12 @@ export const CartItemPage: FC = () => {
     try {
       // const updatedCartItems = cartItems.filter(item => item.id !== itemId);
       const updatedCartItems = cartItems.filter(item => {
-        console.log(item, params?.merchant?.id);
         return item.id !== itemId && item.merchant_id === params?.merchant?.id;
       });
       await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
       setCartItems(updatedCartItems);
       fetchCartItems();
       setCount(updatedCartItems?.length);
-      console.log('cartIrem remove', cartItems);
-      console.log('Success', 'Item removed from cart!');
     } catch (error) {
       console.error('Error removing item from cart: ', error);
     }
@@ -531,12 +489,11 @@ export const CartItemPage: FC = () => {
       // const fees = (parseFloat(feeamt?.toString()) / 100) * amt;
       // console.log('fees ********', fees);
       // const total = amt + fees;
-      console.log('total ********', totalAmountData?.toString());
+
       var body = {
         amount: totalAmountData?.toString(),
         uuid: uuId,
       };
-      console.log('body *************', body);
       const response = await axios.post(
         'https://fetangift.com/api/request_payload',
         body,
@@ -549,19 +506,20 @@ export const CartItemPage: FC = () => {
       );
 
       const { data } = response;
-      console.log('#########res data===>', data.data);
       if (data.status === 200) {
-        getpaymentUrl(data.data);
-        console.log('res==========>1', data);
+        // getpaymentUrl(data.data);
+        navigation.dispatch(
+          StackActions.replace('PAYMENT', {
+            url: data.data,
+          }),
+        );
       }
     } catch (error) {
-      console.log('e===========>', error);
       // handleError(error);
     }
   };
 
   const getpaymentUrl = async (payload: any) => {
-    console.log('>>>>>payload>>>>>val>>>>>>', payload);
     try {
       const response = await axios.post(
         'https://app.ethiomobilemoney.et:2121/ammapi/payment/service-openup/toTradeWebPay',
@@ -575,16 +533,12 @@ export const CartItemPage: FC = () => {
       );
 
       const { data } = response;
-      console.log('res==========>12', response?.data);
-      console.log('res=========$$$$$$$$$$=>', data);
       if (data.code === 200) {
         navigation.dispatch(
           StackActions.replace('PAYMENT', {
             url: data.data?.toPayUrl,
           }),
         );
-
-        console.log('res==========>', data);
       }
     } catch (e) {
       console.log('ez===========>', e);
@@ -593,11 +547,14 @@ export const CartItemPage: FC = () => {
   };
 
   const calculateFeePercentage = () => {
-    const FeePrice = paymentName === 'telebirr' ? parseFloat(params?.deliveryFee) : parseFloat(params?.DeliveryFee_usd);
+    const FeePrice =
+      paymentName === 'telebirr'
+        ? parseFloat(params?.deliveryFee)
+        : parseFloat(params?.DeliveryFee_usd);
 
     // Ensure FeePrice and totalAmountData are valid numbers
     if (isNaN(FeePrice) || totalAmount === undefined || totalAmount === null) {
-      console.error("FeePrice or totalAmountData is not a valid number.");
+      console.error('FeePrice or totalAmountData is not a valid number.');
       return 0; // Or handle the error appropriately
     }
 
@@ -606,7 +563,7 @@ export const CartItemPage: FC = () => {
 
     // Ensure totalAmountNumber is a valid number
     if (isNaN(totalAmountNumber)) {
-      console.error("totalAmount is not a valid number.");
+      console.error('totalAmount is not a valid number.');
       return 0; // Or handle the error appropriately
     }
 
@@ -761,7 +718,8 @@ export const CartItemPage: FC = () => {
                 </View>
                 <View>
                   <Text style={styles.deliveryFeeText}>
-                    Delivery Fee {paymentName == 'telebirr' ? 'Bir' : 'USD'}: {paymentName == 'telebirr'
+                    Delivery Fee {paymentName == 'telebirr' ? 'Bir' : 'USD'}:{' '}
+                    {paymentName == 'telebirr'
                       ? parseFloat(params?.deliveryFee).toFixed(2)
                       : parseFloat(params?.DeliveryFee_usd).toFixed(2)}
                   </Text>

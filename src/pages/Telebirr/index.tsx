@@ -85,7 +85,6 @@ export const TelebirrForm: FC = () => {
   const [countryNum, setCountryNum] = useState('251');
   const [number, setnumber] = useState('');
   const [error, setError] = useState(false);
-  console.log('data *********', Routedata);
   const [mobileNumber, setMobileNumber] = useState();
 
   const { control, handleSubmit, reset } = useForm({
@@ -94,25 +93,20 @@ export const TelebirrForm: FC = () => {
 
   const onClick = async () => {
     setError(true);
-    console.log(number);
     try {
       const currAmount =
         Routedata?.type == 'Card' && Routedata?.card?.amount?.amount;
 
-      console.log('curramount ********', currAmount);
       const amt = parseFloat((currAmount || 0)?.toString());
       const feeamt = Routedata?.type == 'Card' && Routedata?.card?.amount?.fee;
       const fees = (parseFloat(feeamt?.toString()) / 100) * amt;
-      console.log('fees ********', fees);
       const total = amt + fees;
       const ItemTotal = Routedata?.card;
-      console.log('total ********', ItemTotal);
       var body = {
         amount:
           Routedata?.type == 'Card' ? total.toString() : ItemTotal.toString(),
         uuid: Routedata?.uuid,
       };
-      console.log('body *************', body);
       const response = await axios.post(
         'https://fetangift.com/api/request_payload',
         body,
@@ -125,13 +119,10 @@ export const TelebirrForm: FC = () => {
       );
 
       const { data } = response;
-      console.log('#########res data===>', data.data);
       if (data.status === 200) {
-        console.log('res==========>1', data);
         getpaymentUrl(data.data, Routedata?.type == 'Card' ? total : ItemTotal);
       }
     } catch (error) {
-      console.log('e===========>', error);
       // handleError(error);
     }
   };
@@ -151,7 +142,6 @@ export const TelebirrForm: FC = () => {
         mobile: countryNum + number, // string with 251
         ussd_id: 1,
       };
-      console.log('data ************', bodydata);
       const response = await axios.post(
         'http://hulupay.io/api/pushussd/pay',
         bodydata,
@@ -164,15 +154,11 @@ export const TelebirrForm: FC = () => {
       );
 
       const { data } = response;
-      console.log('res==========>12', response);
-      console.log('res=========$$$$$$$$$$=>', data);
       if (data.code === 200) {
-        console.log('res==========>', data);
         setnumber('');
       }
     } catch (e) {
       toast.error(e?.response?.data?.msg?.mobile[0] || '');
-      console.log('ez===========>', e?.response?.data);
       // handleError(e);
     }
   };
@@ -230,7 +216,6 @@ export const TelebirrForm: FC = () => {
                   withModal
                   countryCode={countryCode}
                   onSelect={(country: Country) => {
-                    console.log(country);
                     // country.field.onChange(e.cca2);
                     // phoneCode.field.onChange(e.callingCode[0] || '');
                     setCountryCode(country.cca2);

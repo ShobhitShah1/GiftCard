@@ -69,7 +69,7 @@ WService.interceptors.request.use(function (config) {
   const states = store.getState();
   if (states.auth) {
     const { _token } = states.auth;
-    console.log('token **********', _token);
+    // console.log('token **********', _token);
     if (_token) {
       config.headers!.Authorization = `Bearer ${_token}`;
     }

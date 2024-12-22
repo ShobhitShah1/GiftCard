@@ -34,7 +34,6 @@ export const baseQuery =
       return { data: result.data };
     } catch (axiosError) {
       const err = axiosError as AxiosError;
-      console.log('error', err);
       if (typeof err.status === 'number') {
         if (err?.status === 0) {
           //internet connection or server down

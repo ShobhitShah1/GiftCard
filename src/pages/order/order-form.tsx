@@ -60,9 +60,6 @@ export const OrderForm: React.FC<Props> = props => {
   //   control: props.control,
   //   name: 'sender_country_code',
   // });
-  useEffect(() => {
-    console.log('OrderForm props', props?.MODE === 'offline');
-  }, [props]);
 
   return (
     <View className="py-5 px-[20px]">

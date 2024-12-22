@@ -11,7 +11,6 @@ const OrderItem: React.FC<{
   item: iOrder;
   onDelete(paymentId: string): void;
 }> = ({ item, onDelete }) => {
-  console.log("item **********",item)
   return (
     <SwipeToDelete onDelete={() => onDelete(item.payment_id)}>
       <View className="flex flex-row bg-white px-2 shadow-sm">
@@ -138,7 +137,6 @@ const HistorySreen: React.FC = () => {
   const [deleteHistory, state] = OrderApi.useDeleteMutation();
 
   useEffect(() => {
-    console.log('data **************************', data);
     if (state.isSuccess && state.data) {
       toast.success(state?.data?.message || '');
     }

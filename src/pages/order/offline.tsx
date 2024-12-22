@@ -101,15 +101,12 @@ export const OfflineOrderPage: FC<OfflineProps> = ({ MODE }) => {
 
   const checkout = useCallback(
     (force = false, agentId?: undefined | string) => {
-      console.log('agentId', agentId);
       if (isSubmitSuccessful || force) {
         // if (authenticated && verified) {
         if (!agentId) {
           setAgentModalVisible(true);
         } else {
-          console.log('agent order', getValues());
           purchaseOrder({ ...getValues(), agentId });
-          console.log('hello');
         }
         // }
         // else if (authenticated && !verified) {
@@ -123,7 +120,6 @@ export const OfflineOrderPage: FC<OfflineProps> = ({ MODE }) => {
     [isSubmitSuccessful, isSubmitted, isSubmitting],
   );
   const onSubmit = (value: FieldValues) => {
-    console.log('values offline ******* ', value);
     setValue('id', UserId ? UserId : null);
     checkout(true);
   };
@@ -244,7 +240,6 @@ export const OfflineOrderPage: FC<OfflineProps> = ({ MODE }) => {
         fee={data?.fee}
         onModalHide={setAgentModalVisible}
         onSuccess={agentId => {
-          console.log('OnSuccess Agent Verification:', agentId);
           setAgentModalVisible(false);
           checkout(true, agentId);
         }}

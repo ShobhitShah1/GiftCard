@@ -1,5 +1,6 @@
-import { Page } from '@components';
+import { Images } from '@common/constants';
 import { RootStackParamList } from '@models';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   NavigationProp,
   RouteProp,
@@ -7,11 +8,13 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { OrderApi } from '@services/api';
+import React, { FC, useCallback, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Image,
+  Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -19,16 +22,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Carousel from 'react-native-snap-carousel';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Carousel from 'react-native-snap-carousel';
-import { OrderApi } from '@services/api';
-import { Images } from '@common/constants';
-import { DeliveryCheckoutButton } from '@pages/order/Delivery-checkout';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
-import { Dimensions } from 'react-native';
-
 
 export const ItemDeliveryPage: FC = () => {
   const router = useRoute<RouteProp<RootStackParamList, 'ITEMDELIVERY'>>();
@@ -45,16 +41,13 @@ export const ItemDeliveryPage: FC = () => {
     merchantId: params.id,
   });
 
-  console.log("delivery data *******************", data)
-  // console.log('data', data);
   const existingCategories = data?.category || [];
 
   useFocusEffect(
     useCallback(() => {
-      console.log(count);
       fetchCartItems();
 
-      return () => { };
+      return () => {};
     }, [count]),
   );
 
@@ -63,7 +56,6 @@ export const ItemDeliveryPage: FC = () => {
     setLoading(true);
     try {
       const cartItemsJson = await AsyncStorage.getItem('cartItems');
-      console.log('cartItem ********', cartItemsJson);
       setLoading(false);
       if (cartItemsJson !== null) {
         const parsedCartItems = JSON.parse(cartItemsJson);
@@ -84,7 +76,6 @@ export const ItemDeliveryPage: FC = () => {
     try {
       const isDuplicate = cartItems.some(cartItem => cartItem.id === item.id);
       if (isDuplicate) {
-        console.log('Item already exists in the cart!');
         return;
       }
       const itemWithMerchantId = { ...item, merchantId: params?.id };
@@ -92,23 +83,20 @@ export const ItemDeliveryPage: FC = () => {
       await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
       setCartItems(updatedCartItems);
       setCount(updatedCartItems?.length); // Update the count state with the new length of cartItems
-      console.log('Success', 'Item added to cart!');
     } catch (error) {
       console.error('Error adding item to cart: ', error);
     }
   };
 
-  // console.log('cart Items ----------------------->', cartItems);
-  // Create a new array with the "All" category added
   const updatedMenuData =
     existingCategories.length > 0
       ? [
-        {
-          id: 0,
-          name: 'All',
-        },
-        ...existingCategories,
-      ]
+          {
+            id: 0,
+            name: 'All',
+          },
+          ...existingCategories,
+        ]
       : existingCategories;
 
   const filteredMerchantItems = React.useMemo(() => {
@@ -151,7 +139,7 @@ export const ItemDeliveryPage: FC = () => {
                 cartCount: cartItems.length,
                 deliveryFee: data?.DeliveryFee,
                 DeliveryFee_usd: data?.DeliveryFee_usd,
-                Currency: data?.merchant?.active_currency
+                Currency: data?.merchant?.active_currency,
               });
             }}>
             <Ionicons name="cart-sharp" size={26} color={'#000000'} />
@@ -243,7 +231,7 @@ export const ItemDeliveryPage: FC = () => {
                     {
                       borderColor:
                         selectedCategory === item.id ? '#316BEC' : '#D2D5D8',
-                      marginLeft: 5
+                      marginLeft: 5,
                     },
                   ]}
                   activeOpacity={0.8}
@@ -406,7 +394,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginTop: 20,
-    marginLeft: 10
+    marginLeft: 10,
   },
   carouselInsideView: {
     justifyContent: 'center',
@@ -428,7 +416,7 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 1,
     backgroundColor: '#FFFFFF',
-    width: 100
+    width: 100,
   },
   categoryText: {
     padding: Platform.OS == 'ios' ? 5 : 3,

@@ -18,10 +18,10 @@ import {
   PaymentSheetError,
   PlatformPay,
   StripeProvider,
-  confirmPlatformPayPayment,
   usePlatformPay,
   useStripe,
 } from '@stripe/stripe-react-native';
+import axios from 'axios';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { FieldValues, useController, useForm } from 'react-hook-form';
 import {
@@ -36,18 +36,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Modal from 'react-native-modal';
 import Carousel from 'react-native-snap-carousel';
 import Icon from 'react-native-vector-icons/Feather';
-import { useEffectOnce, usePrevious } from 'react-use';
+import { usePrevious } from 'react-use';
 import { AuthModal } from './auth-modal';
-import { MerchantDetail } from './card-detail';
 import { CheckoutButton } from './checkout-button';
 import { OrderForm, validation } from './order-form';
-import axios from 'axios';
-import { PriceMenuModal } from './price-menu';
-import { DeliveryOrderForm, validationDelivery } from './Delivey-order-form';
-import { DeliveryCheckoutButton } from './Delivery-checkout';
 
 const AmountItem: React.FC<{
   card: Card;
@@ -173,19 +167,17 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
   }, [data?.data, params, cardSelected, uuid]);
 
   useEffect(() => {
-    console.log('state', state);
     if (state.isSuccess && state.data?.data) {
       toast.success(state.data?.message || '');
-      console.log('uuid ***********', state.data.data);
       if (state.data.data?.paymentUrl) {
         if (paymentName == 'stripe') {
           setUuid(state.data.data?.paymentUrl);
         } else {
-          navigation.dispatch(
-            StackActions.replace('PAYMENT', {
-              url: state.data.data?.paymentUrl,
-            }),
-          );
+          // navigation.dispatch(
+          //   StackActions.replace('PAYMENT', {
+          //     url: state.data.data?.paymentUrl,
+          //   }),
+          // );
         }
       }
     }
@@ -221,10 +213,8 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
   }, [handleDeepLink]);
 
   const initializePaymentSheet = async (SendUUID: string) => {
-    console.log('initializePaymentSheet UUID', SendUUID);
     const { paymentIntent, ephemeralKey, customer, PaymentId } =
       await fetchPaymentSheetParams(SendUUID);
-    console.log('paymentIntent:>', paymentIntent, ephemeralKey, customer);
     const { error } = await initPaymentSheet({
       customerId: customer,
       customerEphemeralKeySecret: ephemeralKey,
@@ -264,19 +254,10 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
     // .catch(err => {
     //   console.log('err', err);
     // });
-    console.log('error ************', error);
     if (!error) {
       openPaymentSheet(PaymentId);
     } else if (error.code === PaymentSheetError.Failed) {
-      console.log(
-        `PaymentSheet init failed with error code: ${error.code}`,
-        error.message,
-      );
     } else if (error.code === PaymentSheetError.Canceled) {
-      console.log(
-        `PaymentSheet init was canceled with code: ${error.code}`,
-        error.message,
-      );
     }
   };
 
@@ -285,7 +266,6 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
       const currAmount = cardSelected?.amount?.amount_usd;
       const amt = parseFloat((currAmount || 0)?.toString());
       const feeamt = cardSelected?.amount?.commission_usd;
-      // console.log('stripe feeamt', feeamt);
       const fees = (parseFloat(feeamt?.toString()) / 100) * amt;
       const total = amt + fees; // Use original amount for non-delivery items
       const totalInteger = Math.round(total * 100);
@@ -295,8 +275,6 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
         formdata.append('amount', totalInteger.toString());
         formdata.append('uuid', SendID);
 
-        console.log('fetchPaymentSheetParams Formdata ****', formdata);
-        console.log('Token  ****', _token);
         // Convert amount to string before appending
         const myHeaders = new Headers();
         myHeaders.append(
@@ -322,12 +300,10 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
         }
 
         const result = await response.json();
-        console.log('Fetch Payment Sheet Params Result *****', result);
         const paymentIntent = result?.data?.paymentIntent;
         const ephemeralKey = result?.data?.ephemeralKey;
         const customer = result?.data?.customer;
         const PaymentId = result?.data?.payment_id;
-        console.log('PaymentId:', PaymentId);
         setPaymentId(PaymentId);
 
         return {
@@ -436,7 +412,7 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
   // // }
   // };
 
-  const Paymentsuccess = async (SendPaymentId: string) => {
+  const paymentSuccess = async (SendPaymentId: string) => {
     try {
       if (state.data?.data?.paymentUrl || uuid || SendPaymentId) {
         const formdata = new FormData();
@@ -446,7 +422,6 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
 
         // Convert amount to string before appending
 
-        console.log('fromdata *******', formdata);
         const myHeaders = new Headers();
         myHeaders.append(
           'X-Secret-Key',
@@ -471,10 +446,8 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
         }
 
         const result = await response.json();
-        console.log('Payment Success Response:', result);
         navigation.dispatch(StackActions.popToTop());
       } else {
-        console.log('Error In Payment success API');
       }
     } catch (error) {
       console.error('Error fetching payment sheet params:', error);
@@ -487,21 +460,12 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
 
     if (!error) {
       Alert.alert('Success', 'The payment was confirmed successfully');
-      Paymentsuccess(NewPaymentId);
+      paymentSuccess(NewPaymentId);
     } else {
       switch (error.code) {
         case PaymentSheetError.Failed:
-          console.log(
-            `PaymentSheet present failed with error code: ${error.code}`,
-            error.message,
-          );
-
           break;
         case PaymentSheetError.Canceled:
-          console.log(
-            `PaymentSheet present was canceled with code: ${error.code}`,
-            error.message,
-          );
           break;
         case PaymentSheetError.Timeout:
           Alert.alert(
@@ -516,7 +480,6 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
   useEffect(() => {
     (async function () {
       if (!(await isPlatformPaySupported({ googlePay: { testEnv: true } }))) {
-        console.log('Google Pay is not supported.');
         return;
       }
     })();
@@ -525,7 +488,6 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
   useEffect(() => {
     (async function () {
       if (!(await isPlatformPaySupported())) {
-        console.log('Apple Pay is not supported.');
         return;
       }
     })();
@@ -540,7 +502,12 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
           } else if (paymentName == 'telebirr') {
             await purchaseOrder(getValues())
               .then(res => {
-                console.log('Response You Get For Placeorder:', res?.data);
+                if (res?.data?.data?.paymentUrl) {
+                  onClick(res?.data?.data?.paymentUrl);
+                } else {
+                  Alert.alert('Error', 'Payment URL not found');
+                }
+
                 // navigation.navigate('TELEBIRR', {
                 //   card: cardSelected,
                 //   uuid: res?.data?.data?.paymentUrl,
@@ -548,18 +515,14 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
                 // });
                 // initializePaymentSheet(res?.data?.data?.paymentUrl);
               })
-              .catch(err => {
-                console.log(err);
-              });
+              .catch(err => {});
           } else {
             await purchaseOrder(getValues())
               .then(res => {
-                console.log('Respinse You Get For Placeorder:', res?.data);
                 initializePaymentSheet(res?.data?.data?.paymentUrl);
               })
               .catch(err => {
                 Alert.alert('Stripe error', err);
-                console.log(err);
               });
           }
         } else if (authenticated && !verified) {
@@ -583,7 +546,6 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
   );
 
   const onSubmit = (value: FieldValues) => {
-    console.log('Form Data:', value);
     checkout(true);
   };
 
@@ -605,19 +567,16 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
   const onClick = async (uuId: any) => {
     try {
       const currAmount = cardSelected?.amount?.amount;
-
-      console.log('curramount ********', currAmount);
       const amt = parseFloat((currAmount || 0)?.toString());
       const feeamt = cardSelected?.amount?.fee;
       const fees = (parseFloat(feeamt?.toString()) / 100) * amt;
-      console.log('fees ********', fees);
       const total = amt + fees;
-      console.log('total ********', total);
+
       var body = {
         amount: total.toString(),
         uuid: uuId,
       };
-      console.log('body *************', body);
+
       const response = await axios.post(
         'https://fetangift.com/api/request_payload',
         body,
@@ -630,19 +589,19 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
       );
 
       const { data } = response;
-      console.log('#########res data===>', data.data);
       if (data.status === 200) {
-        getpaymentUrl(data.data);
-        console.log('res==========>1', data);
+        navigation.dispatch(
+          StackActions.replace('PAYMENT', {
+            url: data.data,
+          }),
+        );
       }
     } catch (error) {
-      console.log('e===========>', error);
       // handleError(error);
     }
   };
 
-  const getpaymentUrl = async (payload: any) => {
-    console.log('>>>>>payload>>>>>val>>>>>>', payload);
+  const getPaymentURL = async (payload: any) => {
     try {
       const response = await axios.post(
         'https://app.ethiomobilemoney.et:2121/ammapi/payment/service-openup/toTradeWebPay',
@@ -656,19 +615,14 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
       );
 
       const { data } = response;
-      console.log('res==========>12', response);
-      console.log('res=========$$$$$$$$$$=>', data);
       if (data.code === 200) {
         navigation.dispatch(
           StackActions.replace('PAYMENT', {
             url: data.data?.toPayUrl,
           }),
         );
-
-        console.log('res==========>', data);
       }
     } catch (e) {
-      console.log('ez===========>', e);
       // handleError(e);
     }
   };

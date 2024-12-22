@@ -52,9 +52,6 @@ export const MobileInput: React.FC<Props> = ({ control, name }) => {
         onChangeText={text => {
           field.onChange(text);
         }}
-        onChangeFormattedText={text => {
-          console.log('a', text);
-        }}
         containerStyle={{
           borderWidth: 1.3,
           borderColor: errors[name] ? 'rgb(204, 0, 0)' : 'rgb(136, 136, 136)',

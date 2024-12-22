@@ -12,7 +12,6 @@ const StripePayment = () => {
   const initializePaymentSheet = async () => {
     const { paymentIntent, ephemeralKey, customer } =
       await fetchPaymentSheetParams();
-    console.log('paymentIntent:>', paymentIntent, ephemeralKey, customer);
     const { error } = initPaymentSheet({
       merchantDisplayName: 'Example, Inc.',
       customerId: customer,
@@ -29,36 +28,39 @@ const StripePayment = () => {
     }
   };
 
-  const fetchPaymentSheetParams = async(amount) => {
+  const fetchPaymentSheetParams = async amount => {
     // console.log(amount)
     try {
       const formdata = new FormData();
       formdata.append('amount', amount?.totalInteger?.toString()); // Convert amount to string before appending
-  
+
       const myHeaders = new Headers();
-      myHeaders.append('X-Secret-Key', '7q3koDuZzmOiILgPyPpAs07ZdB61n8QuNyTFpFOqLQ');
-  
+      myHeaders.append(
+        'X-Secret-Key',
+        '7q3koDuZzmOiILgPyPpAs07ZdB61n8QuNyTFpFOqLQ',
+      );
+
       const requestOptions = {
         method: 'POST',
         headers: myHeaders,
         body: formdata,
         redirect: 'follow',
       };
-  
+
       const response = await fetch(
         'http://10.0.0.68/fetangift/public/api/order/payment-sheet',
-        requestOptions
+        requestOptions,
       );
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const result = await response.json();
       const paymentIntent = result?.data?.paymentIntent;
       const ephemeralKey = result?.data?.ephemeralKey;
       const customer = result?.data?.customer;
-  
+
       return {
         paymentIntent,
         ephemeralKey,

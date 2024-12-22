@@ -1,11 +1,11 @@
 import React from 'react';
-import { TextInput, View, Text } from 'react-native';
 import type { ViewProps } from 'react-native';
+import { TextInput, View } from 'react-native';
 import CountryPicker, {
   CountryModalProvider,
 } from 'react-native-country-picker-modal';
 
-import { useForm, useController, Control, FieldValues } from 'react-hook-form';
+import { Control, FieldValues, useController } from 'react-hook-form';
 
 type Props = {
   name: string;
@@ -38,7 +38,7 @@ export const MobileInput: React.FC<Props> = ({
     name: 'phoneCode',
     defaultValue: '+251',
   });
-  console.log('country', country.field.value);
+
   return (
     <CountryModalProvider>
       <View

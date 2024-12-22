@@ -89,8 +89,6 @@ export const useAuth = (): useAuthType => {
       .unwrap()
       .then(res => {
         if (res?.data) {
-          console.log('LOGIN API RESPONSE:', res);
-          console.log('LOGIN API RESPONSE DATA:', res?.data);
           dispatch(setCredentials(res.data));
         }
       })

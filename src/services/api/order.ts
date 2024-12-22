@@ -7,7 +7,17 @@ export const OrderApi = createApi({
   baseQuery: baseQuery(),
   tagTypes: ['order'],
   endpoints: build => ({
-    order: build.mutation<ApiResponse<{ paymentUrl: string , paymentIntent :string ,ephemeralKey : string , customer : string , payment_id : string , uuid : string }>, any>({
+    order: build.mutation<
+      ApiResponse<{
+        paymentUrl: string;
+        paymentIntent: string;
+        ephemeralKey: string;
+        customer: string;
+        payment_id: string;
+        uuid: string;
+      }>,
+      any
+    >({
       query: q => {
         return {
           url: '/order',
@@ -16,7 +26,7 @@ export const OrderApi = createApi({
         };
       },
     }),
-    stripepaymentstatus : build.query<ApiResponse<any>, any>({
+    stripepaymentstatus: build.query<ApiResponse<any>, any>({
       query: q => ({
         url: '/stripe-payment-status',
         method: 'POST',
@@ -53,12 +63,14 @@ export const OrderApi = createApi({
         };
       },
     }),
-    deliveryMenu: build.query<ApiResponse<any>, { merchantId: Merchant['id'] }>({
-      query: q => ({
-        url: '/common/deliverymenu',
-        method: 'GET',
-        params: q,
-      }),
-    }),
+    deliveryMenu: build.query<ApiResponse<any>, { merchantId: Merchant['id'] }>(
+      {
+        query: q => ({
+          url: '/common/deliverymenu',
+          method: 'GET',
+          params: q,
+        }),
+      },
+    ),
   }),
 });

@@ -35,9 +35,6 @@ export const LoginPopoup = React.forwardRef<BottomSheet>((props, ref) => {
       // enableContentPanningGesture
       // enableHandlePanningGesture
       enableOverDrag
-      onClose={() => {
-        console.log('modal closed.');
-      }}
       style={{
         zIndex: 9999,
       }}>
