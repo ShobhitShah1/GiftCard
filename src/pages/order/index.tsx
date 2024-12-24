@@ -172,12 +172,12 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
       if (state.data.data?.paymentUrl) {
         if (paymentName == 'stripe') {
           setUuid(state.data.data?.paymentUrl);
-        } else {
-          // navigation.dispatch(
-          //   StackActions.replace('PAYMENT', {
-          //     url: state.data.data?.paymentUrl,
-          //   }),
-          // );
+        } else if (paymentName === 'paypal') {
+          navigation.dispatch(
+            StackActions.replace('PAYMENT', {
+              url: state.data.data?.paymentUrl,
+            }),
+          );
         }
       }
     }
@@ -213,51 +213,58 @@ export const OrderPage: FC<OfflineProps> = ({ MODE }) => {
   }, [handleDeepLink]);
 
   const initializePaymentSheet = async (SendUUID: string) => {
-    const { paymentIntent, ephemeralKey, customer, PaymentId } =
-      await fetchPaymentSheetParams(SendUUID);
-    const { error } = await initPaymentSheet({
-      customerId: customer,
-      customerEphemeralKeySecret: ephemeralKey,
-      paymentIntentClientSecret: paymentIntent,
-      customFlow: false,
-      merchantDisplayName: merchant?.name,
-      applePay: {
-        merchantCountryCode: 'US',
-        // cartItems: [
-        //         {
-        //           label: 'Example item name',
-        //           amount: '14.00',
-        //           paymentType: PlatformPay.PaymentType.Immediate,
-        //         },
-        //         {
-        //           label: 'Total',
-        //           amount: '12.75',
-        //           paymentType: PlatformPay.PaymentType.Immediate,
-        //         },
-        //       ],
-        requiredShippingAddressFields: [PlatformPay.ContactField.PostalAddress],
-        requiredBillingContactFields: [PlatformPay.ContactField.PhoneNumber],
-      },
-      style: 'automatic',
-      googlePay: {
-        merchantCountryCode: 'US',
-        testEnv: true,
-      },
-      returnURL: 'stripe-example://stripe-redirect',
-      allowsDelayedPaymentMethods: true,
-      primaryButtonLabel: 'purchase!',
-      removeSavedPaymentMethodMessage: 'remove this payment method?',
-    });
-    //   console.log('res -->', res);
-    //   openPaymentSheet(PaymentId);
-    // })
-    // .catch(err => {
-    //   console.log('err', err);
-    // });
-    if (!error) {
-      openPaymentSheet(PaymentId);
-    } else if (error.code === PaymentSheetError.Failed) {
-    } else if (error.code === PaymentSheetError.Canceled) {
+    try {
+      const { paymentIntent, ephemeralKey, customer, PaymentId } =
+        await fetchPaymentSheetParams(SendUUID);
+      const { error } = await initPaymentSheet({
+        customerId: customer,
+        customerEphemeralKeySecret: ephemeralKey,
+        paymentIntentClientSecret: paymentIntent,
+        customFlow: false,
+        merchantDisplayName: merchant?.name,
+        applePay: {
+          merchantCountryCode: 'US',
+          // cartItems: [
+          //         {
+          //           label: 'Example item name',
+          //           amount: '14.00',
+          //           paymentType: PlatformPay.PaymentType.Immediate,
+          //         },
+          //         {
+          //           label: 'Total',
+          //           amount: '12.75',
+          //           paymentType: PlatformPay.PaymentType.Immediate,
+          //         },
+          //       ],
+          requiredShippingAddressFields: [
+            PlatformPay.ContactField.PostalAddress,
+          ],
+          requiredBillingContactFields: [PlatformPay.ContactField.PhoneNumber],
+        },
+        style: 'automatic',
+        googlePay: {
+          merchantCountryCode: 'US',
+          testEnv: true,
+        },
+        returnURL: 'stripe-example://stripe-redirect',
+        allowsDelayedPaymentMethods: true,
+        primaryButtonLabel: 'purchase!',
+        removeSavedPaymentMethodMessage: 'remove this payment method?',
+      });
+      //   console.log('res -->', res);
+      //   openPaymentSheet(PaymentId);
+      // })
+      // .catch(err => {
+      //   console.log('err', err);
+      // });
+      console.log('error:', error);
+      if (!error) {
+        openPaymentSheet(PaymentId);
+      } else if (error.code === PaymentSheetError.Failed) {
+      } else if (error.code === PaymentSheetError.Canceled) {
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
